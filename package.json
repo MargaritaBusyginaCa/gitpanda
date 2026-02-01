@@ -9,13 +9,19 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "gitpanda.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "gitpanda.statusBarHandler",
+        "title": "Say Hello"
       }
     ]
   },
