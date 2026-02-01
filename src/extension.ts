@@ -1,8 +1,19 @@
 import * as vscode from "vscode";
-import { getCurrentBranch } from "./services/git-service";
+import { runGitCommand } from "./services/git-service";
 
+const menuOptions = [
+  "Copy Branch",
+  "Branch Info",
+  "Delete Current Branch",
+  "Delete All Merged Branches",
+  "Git Ship",
+  "Git Ship All",
+];
 export function activate(context: vscode.ExtensionContext) {
   console.log('Congratulations, your extension "gitpanda" is now active!');
+
+  const output = vscode.window.createOutputChannel("GitPanda");
+  context.subscriptions.push(output);
 
   // Create the status bar item
   const myStatusBarItem = vscode.window.createStatusBarItem(
@@ -22,37 +33,68 @@ export function activate(context: vscode.ExtensionContext) {
 
   let statusBarHandler = vscode.commands.registerCommand(
     "gitpanda.statusBarHandler",
-    () => {
-      vscode.window
-        .showQuickPick(
-          [
-            "Copy Branch",
-            "Delete Current Branch",
-            "Delete Merged Branches",
-            "Git Ship",
-          ],
-          { placeHolder: "Select a branch tool" },
-        )
-        .then((selection) => {
-          if (selection) {
-            getCurrentBranch().then((branch) => {
-              vscode.window.showInformationMessage(`Current branch: ${branch}`);
-            });
-            vscode.window.showInformationMessage(`You selected: ${selection}`);
-          }
-        });
-    },
-  );
+    async () => {
+      const selection = await vscode.window.showQuickPick(menuOptions, {
+        placeHolder: "Select a branch tool",
+      });
 
-  const disposable = vscode.commands.registerCommand(
-    "gitpanda.helloWorld",
-    () => {
-      vscode.window.showInformationMessage("Hello World from gitpanda!");
+      if (!selection) {
+        return;
+      }
+
+      // Define handlers for each menu option
+      // Created a dictionary to map options to their handlers
+      // Record<K, V> is a TypeScript utility type that defines an object type with keys of type K and values of type V
+      const handlers: Record<string, () => Promise<void>> = {
+        "Copy Branch": async () => {
+          const branch = (
+            await runGitCommand("git branch --show-current")
+          ).trim();
+          await vscode.env.clipboard.writeText(branch);
+          vscode.window.showInformationMessage(`Copied branch: ${branch}`);
+        },
+        "Branch Info": async () => {
+          const status = (await runGitCommand("git status")).trim();
+          vscode.window.showInformationMessage(`Status: ${status}`);
+          output.appendLine("git status:");
+          output.appendLine(status);
+          output.show(true);
+        },
+        "Delete Current Branch": async () => {
+          vscode.window.showWarningMessage(
+            "Delete Current Branch is not implemented yet.",
+          );
+        },
+        "Delete All Merged Branches": async () => {
+          vscode.window.showWarningMessage(
+            "Delete All Merged Branches is not implemented yet.",
+          );
+        },
+        "Git Ship": async () => {
+          vscode.window.showWarningMessage("Git Ship is not implemented yet.");
+        },
+        "Git Ship All": async () => {
+          vscode.window.showWarningMessage(
+            "Git Ship All is not implemented yet.",
+          );
+        },
+      };
+
+      const handler = handlers[selection];
+      if (!handler) {
+        vscode.window.showErrorMessage(`Unknown option: ${selection}`);
+        return;
+      }
+
+      try {
+        await handler();
+      } catch (err) {
+        vscode.window.showErrorMessage(String(err));
+      }
     },
   );
 
   context.subscriptions.push(statusBarHandler);
-  context.subscriptions.push(disposable);
 }
 
 // This method is called when your extension is deactivated

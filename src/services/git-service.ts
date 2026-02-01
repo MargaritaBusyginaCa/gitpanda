@@ -4,9 +4,8 @@ import * as vscode from "vscode";
 
 const execAsync = promisify(exec);
 
-export async function getCurrentBranch(): Promise<string> {
+export async function runGitCommand(command: string): Promise<string> {
   const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-  const command = "git branch --show-current";
 
   if (!workspaceFolder) {
     throw new Error("Workspace is not found");
@@ -17,6 +16,6 @@ export async function getCurrentBranch(): Promise<string> {
     });
     return stdout;
   } catch (err) {
-    throw new Error("Failed to get current branch");
+    throw new Error("Failed to get current branch info");
   }
 }
