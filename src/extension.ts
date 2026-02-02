@@ -1,16 +1,16 @@
 import * as vscode from "vscode";
-import { runGitCommand } from "./services/git-service";
+import { runGitCommand, deleteCurrentBranch } from "./services/git-service";
 
 const menuOptions = [
-  "Copy Branch",
-  "Branch Info",
+  "Copy Branch Name",
   "Delete Current Branch",
   "Delete All Merged Branches",
   "Git Ship",
   "Git Ship All",
+  "Branch Info",
 ];
 export function activate(context: vscode.ExtensionContext) {
-  console.log('Congratulations, your extension "gitpanda" is now active!');
+  console.log("Gitpanda is now active!");
 
   const output = vscode.window.createOutputChannel("GitPanda");
   context.subscriptions.push(output);
@@ -46,12 +46,14 @@ export function activate(context: vscode.ExtensionContext) {
       // Created a dictionary to map options to their handlers
       // Record<K, V> is a TypeScript utility type that defines an object type with keys of type K and values of type V
       const handlers: Record<string, () => Promise<void>> = {
-        "Copy Branch": async () => {
+        "Copy Branch Name": async () => {
           const branch = (
             await runGitCommand("git branch --show-current")
           ).trim();
           await vscode.env.clipboard.writeText(branch);
-          vscode.window.showInformationMessage(`Copied branch: ${branch}`);
+          vscode.window.showInformationMessage(
+            "Branch name was copied to clipboard",
+          );
         },
         "Branch Info": async () => {
           const status = (await runGitCommand("git status")).trim();
@@ -61,9 +63,8 @@ export function activate(context: vscode.ExtensionContext) {
           output.show(true);
         },
         "Delete Current Branch": async () => {
-          vscode.window.showWarningMessage(
-            "Delete Current Branch is not implemented yet.",
-          );
+          await deleteCurrentBranch();
+          vscode.window.showInformationMessage("Current branch was deleted");
         },
         "Delete All Merged Branches": async () => {
           vscode.window.showWarningMessage(
