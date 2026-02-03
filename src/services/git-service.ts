@@ -20,46 +20,100 @@ export async function runGitCommand(command: string): Promise<string> {
   }
 }
 
-export async function deleteCurrentBranch() {
-  //Check if the current branch is main or master
+function parseLocalBranches(raw: string): string[] {
+  return raw
+    .split("\n")
+    .map((line) => line.replace(/^\*\s*/, "").trim())
+    .filter(Boolean);
+}
+
+export async function deleteCurrentBranch(): Promise<void> {
+  const protectedBranches = new Set(["main", "master", "develop"]);
+
   const currentBranch = (
     await runGitCommand("git branch --show-current")
   ).trim();
-  if (
-    currentBranch === "main" ||
-    currentBranch === "master" ||
-    currentBranch === "develop"
-  ) {
+
+  if (protectedBranches.has(currentBranch)) {
     throw new Error(
-      "Gitpanda doesn't delete main, master or develop branches.",
+      "Gitpanda doesn't delete main, master, or develop branches.",
     );
-  } else {
-    //Delete the current branch
-    try {
-      //if there is a main, master or develop branch, checkout to that branch first
-      const branches = await runGitCommand("git branch");
-      if (branches.includes("develop")) {
-        await runGitCommand("git checkout develop");
-      } else if (branches.includes("main")) {
-        await runGitCommand("git checkout main");
-      } else if (branches.includes("master")) {
-        await runGitCommand("git checkout master");
-      } else {
-        //if none of the above branches exist, checkout to the first branch in the list that is not the current branch
-        const branchList = branches
-          .split("\n")
-          .map((b) => b.replace("*", "").trim())
-          .filter((b) => b !== currentBranch && b.length > 0);
-        if (branchList.length === 0) {
-          throw new Error(
-            "No other branches to checkout to. Cannot delete the current branch.",
-          );
-        }
-        await runGitCommand(`git checkout ${branchList[0]}`);
-      }
+  }
+
+  // 1) Switch away from current branch
+  try {
+    await runGitCommand("git checkout -");
+  } catch {
+    // 2) If checkout - fails, ask the user where to go
+    const branchesRaw = await runGitCommand("git branch");
+    const branches = parseLocalBranches(branchesRaw).filter(
+      (b) => b !== currentBranch,
+    );
+
+    if (branches.length === 0) {
+      throw new Error(
+        "No other branches to checkout to. Cannot delete the current branch.",
+      );
+    }
+
+    const target = await vscode.window.showQuickPick(branches, {
+      title: "Select a branch to checkout before deleting the current branch",
+      placeHolder: "Choose a branch",
+    });
+
+    // user cancelled
+    if (!target) return;
+
+    await runGitCommand(`git checkout ${target}`);
+  }
+
+  // 3) Try safe delete first
+  try {
+    await runGitCommand(`git branch -d ${currentBranch}`);
+    vscode.window.showInformationMessage(`Deleted branch: ${currentBranch}`);
+    return;
+  } catch (e) {
+    // 4) If not merged (or other failure), offer force delete
+    const choice = await vscode.window.showWarningMessage(
+      `Couldn't safely delete "${currentBranch}" (it may not be fully merged). Force delete?`,
+      { modal: true },
+      "Force delete",
+    );
+
+    if (choice === "Force delete") {
       await runGitCommand(`git branch -D ${currentBranch}`);
-    } catch (err) {
-      throw new Error("Failed to delete the current branch");
+      vscode.window.showInformationMessage(
+        `Force deleted branch: ${currentBranch}`,
+      );
+    }
+  }
+}
+
+export async function deleteAllMergedBranches() {
+  // Implementation for deleting all merged branches except main, master, develop
+  // await runGitCommand("git branch --merged");
+  const choice = await vscode.window.showWarningMessage(
+    `Delete all merged local branches (safe delete)?`,
+    { modal: true },
+    "Yes",
+  );
+
+  if (choice === "Yes") {
+    const mergedBranchesRaw = await runGitCommand("git branch --merged");
+    const mergedBranches = parseLocalBranches(mergedBranchesRaw);
+
+    const protectedBranches = new Set(["main", "master", "develop"]);
+    const branchesToDelete = mergedBranches.filter(
+      (b) => !protectedBranches.has(b),
+    );
+
+    for (const branch of branchesToDelete) {
+      try {
+        await runGitCommand(`git branch -d ${branch}`);
+        vscode.window.showInformationMessage(`Deleted branch: ${branch}`);
+      } catch {
+        // Skip branches that can't be deleted safely
+      }
     }
   }
 }

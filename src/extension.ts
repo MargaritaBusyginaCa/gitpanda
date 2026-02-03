@@ -1,5 +1,9 @@
 import * as vscode from "vscode";
-import { runGitCommand, deleteCurrentBranch } from "./services/git-service";
+import {
+  runGitCommand,
+  deleteCurrentBranch,
+  deleteAllMergedBranches,
+} from "./services/git-service";
 
 const menuOptions = [
   "Copy Branch Name",
@@ -64,12 +68,14 @@ export function activate(context: vscode.ExtensionContext) {
         },
         "Delete Current Branch": async () => {
           await deleteCurrentBranch();
-          vscode.window.showInformationMessage("Current branch was deleted");
         },
         "Delete All Merged Branches": async () => {
-          vscode.window.showWarningMessage(
-            "Delete All Merged Branches is not implemented yet.",
-          );
+          // const status = (await runGitCommand("git branch --merged")).trim();
+          // vscode.window.showInformationMessage(`Status: ${status}`);
+          // output.appendLine("git status:");
+          // output.appendLine(status);
+          // output.show(true);
+          await deleteAllMergedBranches();
         },
         "Git Ship": async () => {
           vscode.window.showWarningMessage("Git Ship is not implemented yet.");
