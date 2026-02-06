@@ -117,3 +117,15 @@ export async function deleteAllMergedBranches() {
     }
   }
 }
+
+export async function extractTicketId() {
+  //extract ticket id from a branchName
+
+  const currentBranch = (
+    await runGitCommand("git branch --show-current")
+  ).trim();
+
+  const regex = /\b[A-Z]{2,10}-\d+\b/i;
+  const ticketId = currentBranch.match(regex);
+  return ticketId ?? null;
+}

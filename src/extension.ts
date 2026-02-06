@@ -3,6 +3,7 @@ import {
   runGitCommand,
   deleteCurrentBranch,
   deleteAllMergedBranches,
+  extractTicketId,
 } from "./services/git-service";
 
 const menuOptions = [
@@ -70,15 +71,12 @@ export function activate(context: vscode.ExtensionContext) {
           await deleteCurrentBranch();
         },
         "Delete All Merged Branches": async () => {
-          // const status = (await runGitCommand("git branch --merged")).trim();
-          // vscode.window.showInformationMessage(`Status: ${status}`);
-          // output.appendLine("git status:");
-          // output.appendLine(status);
-          // output.show(true);
           await deleteAllMergedBranches();
         },
         "Git Ship": async () => {
-          vscode.window.showWarningMessage("Git Ship is not implemented yet.");
+          // vscode.window.showWarningMessage("Git Ship is not implemented yet.");
+          const ticketId = await extractTicketId();
+          vscode.window.showWarningMessage(`ticketId: ${ticketId}`);
         },
         "Git Ship All": async () => {
           vscode.window.showWarningMessage(
