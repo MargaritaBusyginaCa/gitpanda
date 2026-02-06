@@ -4,6 +4,7 @@ import {
   deleteCurrentBranch,
   deleteAllMergedBranches,
   extractTicketId,
+  shipAll,
 } from "./services/git-service";
 
 const menuOptions = [
@@ -62,9 +63,15 @@ export function activate(context: vscode.ExtensionContext) {
         },
         "Branch Info": async () => {
           const status = (await runGitCommand("git status")).trim();
-          vscode.window.showInformationMessage(`Status: ${status}`);
-          output.appendLine("git status:");
+          const branchAge = (
+            await runGitCommand("git log --pretty=format:'%ar' -1")
+          ).trim();
+          vscode.window.showInformationMessage(
+            `Branch info retrieved. Check output for details.`,
+          );
+          output.appendLine("Branch info:");
           output.appendLine(status);
+          output.appendLine(`Branch created: ${branchAge}`);
           output.show(true);
         },
         "Delete Current Branch": async () => {
@@ -74,14 +81,10 @@ export function activate(context: vscode.ExtensionContext) {
           await deleteAllMergedBranches();
         },
         "Git Ship": async () => {
-          // vscode.window.showWarningMessage("Git Ship is not implemented yet.");
-          const ticketId = await extractTicketId();
-          vscode.window.showWarningMessage(`ticketId: ${ticketId}`);
+          vscode.window.showWarningMessage("Git Ship is not implemented yet.");
         },
         "Git Ship All": async () => {
-          vscode.window.showWarningMessage(
-            "Git Ship All is not implemented yet.",
-          );
+          await shipAll();
         },
       };
 
