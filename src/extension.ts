@@ -3,15 +3,14 @@ import {
   runGitCommand,
   deleteCurrentBranch,
   deleteAllMergedBranches,
-  extractTicketId,
   shipAll,
 } from "./services/git-service";
+import { copyBranchName } from "./utils/ui-utils";
 
 const menuOptions = [
   "Copy Branch Name",
   "Delete Current Branch",
   "Delete All Merged Branches",
-  "Git Ship",
   "Git Ship All",
   "Branch Info",
 ];
@@ -29,7 +28,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Set properties
   myStatusBarItem.text = `$(sparkle) Branch tools`;
-  myStatusBarItem.tooltip = "Click to view available branch tools";
+  myStatusBarItem.tooltip = "Click to view available git branch tools";
   myStatusBarItem.command = "gitpanda.statusBarHandler";
 
   // Add the status bar item to the extension's subscriptions to be disposed of correctly
@@ -53,13 +52,16 @@ export function activate(context: vscode.ExtensionContext) {
       // Record<K, V> is a TypeScript utility type that defines an object type with keys of type K and values of type V
       const handlers: Record<string, () => Promise<void>> = {
         "Copy Branch Name": async () => {
-          const branch = (
-            await runGitCommand("git branch --show-current")
-          ).trim();
-          await vscode.env.clipboard.writeText(branch);
-          vscode.window.showInformationMessage(
-            "Branch name was copied to clipboard",
-          );
+          await copyBranchName();
+        },
+        "Delete Current Branch": async () => {
+          await deleteCurrentBranch();
+        },
+        "Delete All Merged Branches": async () => {
+          await deleteAllMergedBranches();
+        },
+        "Git Ship All": async () => {
+          await shipAll();
         },
         "Branch Info": async () => {
           const status = (await runGitCommand("git status")).trim();
@@ -73,18 +75,6 @@ export function activate(context: vscode.ExtensionContext) {
           output.appendLine(status);
           output.appendLine(`Branch created: ${branchAge}`);
           output.show(true);
-        },
-        "Delete Current Branch": async () => {
-          await deleteCurrentBranch();
-        },
-        "Delete All Merged Branches": async () => {
-          await deleteAllMergedBranches();
-        },
-        "Git Ship": async () => {
-          vscode.window.showWarningMessage("Git Ship is not implemented yet.");
-        },
-        "Git Ship All": async () => {
-          await shipAll();
         },
       };
 

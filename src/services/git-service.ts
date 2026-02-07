@@ -1,6 +1,8 @@
 import { exec } from "child_process";
 import { promisify } from "util";
 import * as vscode from "vscode";
+import { parseLocalBranches } from "../utils/git-utils";
+import { getCommitMessage } from "../utils/ui-utils";
 
 const execAsync = promisify(exec);
 
@@ -18,13 +20,6 @@ export async function runGitCommand(command: string): Promise<string> {
   } catch (err) {
     throw new Error("Failed to get current branch info");
   }
-}
-
-function parseLocalBranches(raw: string): string[] {
-  return raw
-    .split("\n")
-    .map((line) => line.replace(/^\*\s*/, "").trim())
-    .filter(Boolean);
 }
 
 export async function deleteCurrentBranch(): Promise<void> {
@@ -90,8 +85,6 @@ export async function deleteCurrentBranch(): Promise<void> {
 }
 
 export async function deleteAllMergedBranches() {
-  // Implementation for deleting all merged branches except main, master, develop
-  // await runGitCommand("git branch --merged");
   const choice = await vscode.window.showWarningMessage(
     `Delete all merged local branches (safe delete)?`,
     { modal: true },
@@ -111,48 +104,8 @@ export async function deleteAllMergedBranches() {
       try {
         await runGitCommand(`git branch -d ${branch}`);
         vscode.window.showInformationMessage(`Deleted branch: ${branch}`);
-      } catch {
-        // Skip branches that can't be deleted safely
-      }
+      } catch {}
     }
-  }
-}
-
-export async function extractTicketId() {
-  //extract ticket id from a branchName
-
-  const currentBranch = (
-    await runGitCommand("git branch --show-current")
-  ).trim();
-
-  const regex = /\b[A-Z]{2,10}-\d+\b/i;
-  const ticketId = currentBranch.match(regex);
-  return ticketId?.[0] ?? null;
-}
-
-export async function getCommitMessage() {
-  const ticketId = await extractTicketId();
-  const result = await vscode.window.showInputBox({
-    value: ticketId ?? "",
-    placeHolder: "ex: Changed typescript version",
-    prompt: "Enter your commit message",
-    ignoreFocusOut: true,
-  });
-
-  if (result !== undefined) {
-    if (result.trim() === "") {
-      vscode.window.showErrorMessage("Commit message cannot be empty.");
-      return;
-    } else if (result.length > 72) {
-      vscode.window.showErrorMessage(
-        "Commit message is too long (max 72 characters).",
-      );
-      return;
-    } else {
-      return result;
-    }
-  } else {
-    return null;
   }
 }
 
