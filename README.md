@@ -1,71 +1,46 @@
-# gitpanda README
+# Gitpanda
 
-This is the README for your extension "gitpanda". After writing up a brief description, we recommend including the following sections.
+Gitpanda is a VS Code extension that enhances your Git branch workflow and helps keep repositories clean and easy to manage.
 
-## Features
+### Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- **One-click branch name copy**
+- **Delete the current branch with one click** (not available in the default VS Code Git UI)
+- **Safely delete all merged local branches**  
+  Gitpanda never deletes `main`, `master`, or `develop`.  
+  _(Pushing important work to origin before cleanup is recommended.)_
+- **One-click “ship all”**  
+  Stages all changes, commits them with your message, and pushes to origin.
+- **Useful branch insights**  
+  View branch status and last commit information.
 
-For example if there is an image subfolder under your extension project workspace:
+### Commands
 
-\!\[feature X\]\(images/feature-x.png\)
+All commands are available via the **status bar button** or the **Command Palette**:
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+- `gitpanda.copy` — Copy the current branch name
+- `gitpanda.deleteCurrentBranch` — Delete the current branch and switch to the previous one
+- `gitpanda.deleteMergedBranches` — Safely delete all merged local branches (excluding protected branches)
+- `gitpanda.shipAll` — Stage, commit, and push all changes
+- `gitpanda.branchInfo` — Show current branch status and last commit info
 
-## Requirements
+Your workspace has to have a git repository initialized to use this extension.
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+### How to Install
 
-## Extension Settings
+1. Open **VS Code**
+2. Go to the **Extensions** view (`Ctrl+Shift+X` / `Cmd+Shift+X`)
+3. Search for **Gitpanda**
+4. Click **Install**
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
+Once installed, the Gitpanda status bar button will appear when you open a Git repository.
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
-
 ### 1.0.0
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+Initial release of gitpanda
 
 ---
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
 
 **Enjoy!**

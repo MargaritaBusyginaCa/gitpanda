@@ -94,7 +94,7 @@ export async function activate(context: vscode.ExtensionContext) {
         "Branch Info": async () => {
           const branchInfo = await getBranchInfo();
           output.appendLine("Branch info:");
-          output.appendLine(`Current branch: ${branchInfo.currentBranch}`);
+          output.appendLine(`Status: ${branchInfo.status}`);
           output.appendLine(`Last commit: ${branchInfo.lastCommitInfo}`);
           output.show(true);
         },
@@ -144,7 +144,7 @@ export async function activate(context: vscode.ExtensionContext) {
     async () => {
       const branchInfo = await getBranchInfo();
       output.appendLine("Branch info:");
-      output.appendLine(`Current branch: ${branchInfo.currentBranch}`);
+      output.appendLine(`Status: ${branchInfo.status}`);
       output.appendLine(`Last commit: ${branchInfo.lastCommitInfo}`);
       output.show(true);
     },
