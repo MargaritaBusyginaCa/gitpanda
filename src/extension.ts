@@ -4,6 +4,7 @@ import {
   deleteCurrentBranch,
   deleteAllMergedBranches,
   shipAll,
+  getBranchInfo,
 } from "./services/git-service";
 import { copyBranchName } from "./utils/ui-utils";
 
@@ -81,16 +82,10 @@ export function activate(context: vscode.ExtensionContext) {
           await shipAll();
         },
         "Branch Info": async () => {
-          const status = (await runGitCommand("git status")).trim();
-          const branchAge = (
-            await runGitCommand("git log --pretty=format:'%ar' -1")
-          ).trim();
-          vscode.window.showInformationMessage(
-            `Branch info retrieved. Check output for details.`,
-          );
+          const branchInfo = await getBranchInfo();
           output.appendLine("Branch info:");
-          output.appendLine(status);
-          output.appendLine(`Branch created: ${branchAge}`);
+          output.appendLine(`Current branch: ${branchInfo.currentBranch}`);
+          output.appendLine(`Last commit: ${branchInfo.lastCommitInfo}`);
           output.show(true);
         },
       };
@@ -137,16 +132,10 @@ export function activate(context: vscode.ExtensionContext) {
   let branchInfoDisposable = vscode.commands.registerCommand(
     "gitpanda.branchInfo",
     async () => {
-      const status = (await runGitCommand("git status")).trim();
-      const branchAge = (
-        await runGitCommand("git log --pretty=format:'%ar' -1")
-      ).trim();
-      vscode.window.showInformationMessage(
-        `Branch info retrieved. Check output for details.`,
-      );
+      const branchInfo = await getBranchInfo();
       output.appendLine("Branch info:");
-      output.appendLine(status);
-      output.appendLine(`Branch created: ${branchAge}`);
+      output.appendLine(`Current branch: ${branchInfo.currentBranch}`);
+      output.appendLine(`Last commit: ${branchInfo.lastCommitInfo}`);
       output.show(true);
     },
   );
@@ -158,5 +147,4 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(branchInfoDisposable);
 }
 
-// This method is called when your extension is deactivated
 export function deactivate() {}

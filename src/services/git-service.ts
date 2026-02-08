@@ -124,3 +124,14 @@ export async function shipAll() {
   );
   await runGitCommand("git push -u origin HEAD");
 }
+
+export async function getBranchInfo() {
+  const currentBranch = (
+    await runGitCommand("git branch --show-current")
+  ).trim();
+
+  const lastCommitInfo = await runGitCommand(
+    'git log -1 --format="%h - %s (%cr)"',
+  );
+  return { currentBranch, lastCommitInfo: lastCommitInfo.trim() };
+}
