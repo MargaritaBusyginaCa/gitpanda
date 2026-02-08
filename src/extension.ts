@@ -7,12 +7,29 @@ import {
 } from "./services/git-service";
 import { copyBranchName } from "./utils/ui-utils";
 
-const menuOptions = [
-  "Copy Branch Name",
-  "Delete Current Branch",
-  "Delete All Merged Branches",
-  "Git Ship All",
-  "Branch Info",
+const menuOptions: vscode.QuickPickItem[] = [
+  {
+    label: "Copy Branch Name",
+    description: "Copy the current branch name to clipboard",
+  },
+  {
+    label: "Delete Current Branch",
+    description: "Delete the current branch (with safety checks)",
+  },
+  {
+    label: "Delete All Merged Branches",
+    description:
+      "Delete all local branches that have been merged (except main/master/develop)",
+  },
+  {
+    label: "Git Ship All",
+    description:
+      "Stage all changes, create a commit, and push to the current branch",
+  },
+  {
+    label: "Branch Info",
+    description: "Show current branch status and age in the output panel",
+  },
 ];
 export function activate(context: vscode.ExtensionContext) {
   console.log("Gitpanda is now active!");
@@ -78,9 +95,9 @@ export function activate(context: vscode.ExtensionContext) {
         },
       };
 
-      const handler = handlers[selection];
+      const handler = handlers[selection.label];
       if (!handler) {
-        vscode.window.showErrorMessage(`Unknown option: ${selection}`);
+        vscode.window.showErrorMessage(`Unknown option: ${selection.label}`);
         return;
       }
 
@@ -92,7 +109,53 @@ export function activate(context: vscode.ExtensionContext) {
     },
   );
 
-  context.subscriptions.push(statusBarHandler);
+  let copyBranchNameDisposable = vscode.commands.registerCommand(
+    "gitpanda.copy",
+    async () => {
+      await copyBranchName();
+    },
+  );
+
+  let deleteBranchNameDisposable = vscode.commands.registerCommand(
+    "gitpanda.deleteCurrentBranch",
+    async () => {
+      await deleteCurrentBranch();
+    },
+  );
+  let deleteMergedBranchesDisposable = vscode.commands.registerCommand(
+    "gitpanda.deleteMergedBranches",
+    async () => {
+      await deleteAllMergedBranches();
+    },
+  );
+  let shipAllDisposable = vscode.commands.registerCommand(
+    "gitpanda.shipAll",
+    async () => {
+      await shipAll();
+    },
+  );
+  let branchInfoDisposable = vscode.commands.registerCommand(
+    "gitpanda.branchInfo",
+    async () => {
+      const status = (await runGitCommand("git status")).trim();
+      const branchAge = (
+        await runGitCommand("git log --pretty=format:'%ar' -1")
+      ).trim();
+      vscode.window.showInformationMessage(
+        `Branch info retrieved. Check output for details.`,
+      );
+      output.appendLine("Branch info:");
+      output.appendLine(status);
+      output.appendLine(`Branch created: ${branchAge}`);
+      output.show(true);
+    },
+  );
+
+  context.subscriptions.push(copyBranchNameDisposable);
+  context.subscriptions.push(deleteBranchNameDisposable);
+  context.subscriptions.push(deleteMergedBranchesDisposable);
+  context.subscriptions.push(shipAllDisposable);
+  context.subscriptions.push(branchInfoDisposable);
 }
 
 // This method is called when your extension is deactivated

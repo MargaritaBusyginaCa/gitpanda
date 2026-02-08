@@ -16,12 +16,28 @@
   "contributes": {
     "commands": [
       {
-        "command": "gitpanda.helloWorld",
-        "title": "Hello World"
+        "command": "gitpanda.copy",
+        "title": "Copy Branch Name"
+      },
+      {
+        "command": "gitpanda.deleteCurrentBranch",
+        "title": "Delete Current Branch"
+      },
+      {
+        "command": "gitpanda.deleteMergedBranches",
+        "title": "Delete Merged Branches"
+      },
+      {
+        "command": "gitpanda.shipAll",
+        "title": "Ship All Changes"
+      },
+      {
+        "command": "gitpanda.branchInfo",
+        "title": "Show Branch Info"
       },
       {
         "command": "gitpanda.statusBarHandler",
-        "title": "Say Hello"
+        "title": "Show Branch Tools"
       }
     ]
   },
