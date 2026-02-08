@@ -32,11 +32,21 @@ const menuOptions: vscode.QuickPickItem[] = [
     description: "Show current branch status and age in the output panel",
   },
 ];
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
   console.log("Gitpanda is now active!");
 
   const output = vscode.window.createOutputChannel("GitPanda");
   context.subscriptions.push(output);
+
+  try {
+    await runGitCommand("git status");
+  } catch (err) {
+    output.appendLine(`Error running git status: ${String(err)}`);
+    vscode.window.showInformationMessage(
+      "Gitpanda didn't find a git repository associated with this workspace.",
+    );
+    return;
+  }
 
   // Create the status bar item
   const myStatusBarItem = vscode.window.createStatusBarItem(
