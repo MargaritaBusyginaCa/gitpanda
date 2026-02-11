@@ -4,6 +4,7 @@
   "description": "A VSCode extension for improved worflow with git branches",
   "version": "0.0.1",
   "icon": "public/images/gitpanda.png",
+  "publisher": "MargaritaBusygina",
   "engines": {
     "vscode": "^1.108.1"
   },
