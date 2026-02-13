@@ -5,7 +5,7 @@ Gitpanda is a VS Code extension that enhances your Git branch workflow and helps
 ### Features
 
 - **One-click branch name copy**
-- **Delete the current branch with one click** (not available in the default VS Code Git UI)
+- **Delete the current branch with one click**
 - **Safely delete all merged local branches**  
   Gitpanda never deletes `main`, `master`, or `develop`.  
   _(Pushing important work to origin before cleanup is recommended.)_
