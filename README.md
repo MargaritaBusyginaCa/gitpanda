@@ -37,9 +37,13 @@ Once installed, the Gitpanda status bar button will appear when you open a Git r
 
 ## Release Notes
 
-### 1.0.0
+### 0.0.1
 
 Initial release of gitpanda
+
+### 0.0.2
+
+Icon change and small readme update
 
 ---
 

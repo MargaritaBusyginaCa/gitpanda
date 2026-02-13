@@ -2,7 +2,7 @@
   "name": "gitpanda",
   "displayName": "Gitpanda",
   "description": "A VSCode extension for improved worflow with git branches",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "icon": "public/images/gitpanda_2.png",
   "publisher": "MargaritaBusygina",
   "engines": {
