@@ -21,9 +21,9 @@ export async function getCommitMessage() {
     if (result.trim() === "") {
       vscode.window.showErrorMessage("Commit message cannot be empty.");
       return;
-    } else if (result.length > 72) {
+    } else if (result.length > 172) {
       vscode.window.showErrorMessage(
-        "Commit message is too long (max 72 characters).",
+        "Commit message is too long (max 172 characters).",
       );
       return;
     } else {
