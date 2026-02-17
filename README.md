@@ -35,6 +35,8 @@ Your workspace has to have a git repository initialized to use this extension.
 
 Once installed, the Gitpanda status bar button will appear when you open a Git repository.
 
+![Demo of the status bar](/public/images/demo.png)
+
 ## Release Notes
 
 ### 0.0.1
@@ -44,6 +46,14 @@ Initial release of gitpanda
 ### 0.0.2
 
 Icon change and small readme update
+
+### 0.0.3
+
+Increased max commit message length from 72 to 172.
+
+### 0.0.4
+
+Small change in the extension description. Added a demo image of branch tools button.
 
 ---
 
